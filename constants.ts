@@ -17,13 +17,6 @@ export const UI_TEXT = {
     modelError: 'Failed to get solution from model. Please ensure the image is clear and contains a solvable math problem.',
     apiError: 'API Error: Please check your network connection or API key.',
     clear: 'Clear',
-    cropImage: 'Crop Image',
-    zoom: 'Zoom',
-    rotate: 'Rotate',
-    cropButton: 'Crop',
-    cancelButton: 'Cancel',
-    loadingImage: 'Loading image...',
-    imageLoadError: 'Failed to load image for cropping.',
   },
   [Language.MS]: {
     appTitle: 'Penyelesai Matematik MY',
@@ -41,13 +34,6 @@ export const UI_TEXT = {
     modelError: 'Gagal mendapatkan penyelesaian daripada model. Sila pastikan imej jelas dan mengandungi masalah matematik yang boleh diselesaikan.',
     apiError: 'Ralat API: Sila semak sambungan rangkaian atau kunci API anda.',
     clear: 'Padam',
-    cropImage: 'Pangkas Imej',
-    zoom: 'Zum',
-    rotate: 'Putar',
-    cropButton: 'Pangkas',
-    cancelButton: 'Batal',
-    loadingImage: 'Memuatkan imej...',
-    imageLoadError: 'Gagal memuatkan imej untuk pemangkasan.',
   },
 };
 
