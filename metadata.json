@@ -1,0 +1,7 @@
+{
+  "name": "MathSolver MY",
+  "description": "An interactive math study app for Malaysian students (Primary, Secondary, SPM, IGCSE & all levels). Solve math problems by taking a photo of the question and get step-by-step solutions in Bahasa Melayu and English.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
