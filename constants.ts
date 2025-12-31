@@ -17,6 +17,17 @@ export const UI_TEXT = {
     modelError: 'Failed to get solution from model. Please ensure the image is clear and contains a solvable math problem.',
     apiError: 'API Error: Please check your network connection or API key.',
     clear: 'Clear',
+    cropImage: 'Crop Image',
+    zoom: 'Zoom',
+    rotate: 'Rotate',
+    cropButton: 'Crop',
+    cancelButton: 'Cancel',
+    loadingImage: 'Loading image...',
+    imageLoadError: 'Failed to load image for cropping.',
+    apiKeyRequiredTitle: 'API Key Required',
+    apiKeyRequiredMessage: 'To use advanced Gemini models for image solving, you need to select an API key linked to a paid Google Cloud Project.',
+    selectApiKeyButton: 'Select API Key',
+    billingInfo: 'View billing information',
   },
   [Language.MS]: {
     appTitle: 'Penyelesai Matematik MY',
@@ -34,6 +45,17 @@ export const UI_TEXT = {
     modelError: 'Gagal mendapatkan penyelesaian daripada model. Sila pastikan imej jelas dan mengandungi masalah matematik yang boleh diselesaikan.',
     apiError: 'Ralat API: Sila semak sambungan rangkaian atau kunci API anda.',
     clear: 'Padam',
+    cropImage: 'Pangkas Imej',
+    zoom: 'Zum',
+    rotate: 'Putar',
+    cropButton: 'Pangkas',
+    cancelButton: 'Batal',
+    loadingImage: 'Memuatkan imej...',
+    imageLoadError: 'Gagal memuatkan imej untuk pemangkasan.',
+    apiKeyRequiredTitle: 'Kunci API Diperlukan',
+    apiKeyRequiredMessage: 'Untuk menggunakan model Gemini lanjutan bagi penyelesaian imej, anda perlu memilih kunci API yang disambungkan kepada Projek Google Cloud berbayar.',
+    selectApiKeyButton: 'Pilih Kunci API',
+    billingInfo: 'Lihat maklumat pengebilan',
   },
 };
 
@@ -85,3 +107,5 @@ Example Structure for a simple problem:
 
 Now, solve the math problem in the image.
 `;
+
+export const BILLING_DOCS_URL = 'https://ai.google.dev/gemini-api/docs/billing';

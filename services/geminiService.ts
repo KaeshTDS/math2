@@ -30,11 +30,8 @@ function fileToBase64(file: File): Promise<string> {
  * @returns A promise that resolves with the structured MathSolution or rejects with an error.
  */
 export async function solveMathProblem(imageFile: File, modelName: string): Promise<ApiResponse> {
-  // Ensure the API key is available. This is assumed to be handled by the environment.
-  if (!process.env.API_KEY) {
-    throw new Error('API_KEY is not defined. Please ensure it is set in your environment.');
-  }
-
+  // The API_KEY is expected to be available via process.env.API_KEY,
+  // which is handled by window.aistudio.openSelectKey in App.tsx.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const base64ImageData = await fileToBase64(imageFile);
