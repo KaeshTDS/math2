@@ -28,6 +28,12 @@ export const UI_TEXT = {
     apiKeyRequiredMessage: 'To use advanced Gemini models for image solving, you need to select an API key linked to a paid Google Cloud Project.',
     selectApiKeyButton: 'Select API Key',
     billingInfo: 'View billing information',
+    premiumAccessTitle: 'Get Premium Access',
+    premiumAccessMessage: 'Enjoy unlimited solutions without needing your own API key. A one-time purchase for seamless math problem-solving!',
+    purchasePremiumButton: 'Purchase Premium Access',
+    purchasing: 'Initiating purchase...',
+    purchaseSuccess: 'Purchase successful! Welcome to Premium Access.',
+    purchaseError: 'Purchase failed. Please try again.',
   },
   [Language.MS]: {
     appTitle: 'Penyelesai Matematik MY',
@@ -56,6 +62,12 @@ export const UI_TEXT = {
     apiKeyRequiredMessage: 'Untuk menggunakan model Gemini lanjutan bagi penyelesaian imej, anda perlu memilih kunci API yang disambungkan kepada Projek Google Cloud berbayar.',
     selectApiKeyButton: 'Pilih Kunci API',
     billingInfo: 'Lihat maklumat pengebilan',
+    premiumAccessTitle: 'Dapatkan Akses Premium',
+    premiumAccessMessage: 'Nikmati penyelesaian tanpa had tanpa memerlukan kunci API anda sendiri. Pembelian sekali sahaja untuk penyelesaian masalah matematik yang lancar!',
+    purchasePremiumButton: 'Beli Akses Premium',
+    purchasing: 'Memulakan pembelian...',
+    purchaseSuccess: 'Pembelian berjaya! Selamat datang ke Akses Premium.',
+    purchaseError: 'Pembelian gagal. Sila cuba lagi.',
   },
 };
 
@@ -109,3 +121,6 @@ Now, solve the math problem in the image.
 `;
 
 export const BILLING_DOCS_URL = 'https://ai.google.dev/gemini-api/docs/billing';
+export const STRIPE_PUBLIC_KEY = 'pk_test_YOUR_STRIPE_PUBLIC_KEY'; // Replace with your actual Stripe public key
+export const PREMIUM_PRODUCT_NAME = 'MathSolver MY Premium Access';
+export const PREMIUM_PRODUCT_PRICE = 2000; // In cents, e.g., $20.00
