@@ -17,8 +17,8 @@ export interface ApiResponse {
 }
 
 // Define the AIStudio interface as per the coding guidelines for window.aistudio
-// Removed 'export' as AIStudio is only used within this file for the global declaration.
-interface AIStudio {
+// Exported AIStudio to resolve "Subsequent property declarations" TypeScript error
+export interface AIStudio {
   hasSelectedApiKey: () => Promise<boolean>;
   openSelectKey: () => Promise<void>;
 }
