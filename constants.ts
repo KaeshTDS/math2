@@ -18,7 +18,7 @@ export const UI_TEXT = {
     apiError: 'API Error: Please check your network connection or API key.',
     clear: 'Clear',
     cropImage: 'Crop Image',
-    zoom: 'Zoom',
+    zoom: 'Zum',
     rotate: 'Rotate',
     cropButton: 'Crop',
     cancelButton: 'Cancel',
@@ -27,6 +27,7 @@ export const UI_TEXT = {
     apiKeyRequiredTitle: 'API Key Required',
     apiKeyRequiredMessage: 'To use advanced Gemini models for image solving, you need to select an API key linked to a paid Google Cloud Project.',
     selectApiKeyButton: 'Select API Key',
+    continueWithApiKeyButton: 'Continue with My API Key', // New text
     billingInfo: 'View billing information',
     premiumAccessTitle: 'Get Premium Access',
     premiumAccessMessage: 'Enjoy unlimited solutions without needing your own API key. A one-time purchase for seamless math problem-solving!',
@@ -61,6 +62,7 @@ export const UI_TEXT = {
     apiKeyRequiredTitle: 'Kunci API Diperlukan',
     apiKeyRequiredMessage: 'Untuk menggunakan model Gemini lanjutan bagi penyelesaian imej, anda perlu memilih kunci API yang disambungkan kepada Projek Google Cloud berbayar.',
     selectApiKeyButton: 'Pilih Kunci API',
+    continueWithApiKeyButton: 'Teruskan dengan Kunci API Saya', // New text
     billingInfo: 'Lihat maklumat pengebilan',
     premiumAccessTitle: 'Dapatkan Akses Premium',
     premiumAccessMessage: 'Nikmati penyelesaian tanpa had tanpa memerlukan kunci API anda sendiri. Pembelian sekali sahaja untuk penyelesaian masalah matematik yang lancar!',
@@ -121,6 +123,7 @@ Now, solve the math problem in the image.
 `;
 
 export const BILLING_DOCS_URL = 'https://ai.google.dev/gemini-api/docs/billing';
-export const STRIPE_PUBLIC_KEY = 'pk_test_YOUR_STRIPE_PUBLIC_KEY'; // Replace with your actual Stripe public key
+export const STRIPE_PUBLIC_KEY = 'pk_test_YOUR_STRIPE_PUBLIC_KEY'; // Replace with your actual Stripe public key (still needed for loadStripe in case of real integration)
 export const PREMIUM_PRODUCT_NAME = 'MathSolver MY Premium Access';
-export const PREMIUM_PRODUCT_PRICE = 2000; // In cents, e.g., $20.00
+export const PREMIUM_PRODUCT_PRICE = 500; // In cents, e.g., $5.00
+export const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_5kQ9AVd6pewR6Qqawm4gg00'; // Direct payment link

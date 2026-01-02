@@ -1,20 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Language, MathSolution, ApiResponse } from './types';
-import { UI_TEXT, GEMINI_MODEL_IMAGE, BILLING_DOCS_URL, STRIPE_PUBLIC_KEY, PREMIUM_PRODUCT_NAME, PREMIUM_PRODUCT_PRICE } from './constants';
+import { UI_TEXT, GEMINI_MODEL_IMAGE, BILLING_DOCS_URL, STRIPE_PUBLIC_KEY, PREMIUM_PRODUCT_NAME, PREMIUM_PRODUCT_PRICE, STRIPE_PAYMENT_LINK } from './constants';
 import { solveMathProblem } from './services/geminiService';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import FileUpload from './components/FileUpload';
 import { loadStripe } from '@stripe/stripe-js';
-
-// Extend Window interface for aistudio object
-declare global {
-  interface Window {
-    aistudio?: {
-      hasSelectedApiKey: () => Promise<boolean>;
-      openSelectKey: () => Promise<void>;
-    };
-  }
-}
 
 // Helper component for displaying solution details
 interface SolutionDetailsProps {
@@ -38,21 +28,7 @@ const SolutionDetails: React.FC<SolutionDetailsProps> = ({ title, solution, step
   );
 };
 
-// Mock function to simulate a backend call to create a Stripe Checkout Session
-async function createStripeCheckoutSession(productName: string, price: number): Promise<{ sessionId: string, url: string }> {
-  console.log(`Simulating backend call to create Stripe Checkout Session for ${productName} (${price} cents)`);
-  // In a real application, this would be an API call to your backend:
-  // const response = await fetch('/api/create-checkout-session', { method: 'POST', body: JSON.stringify({ productName, price }) });
-  // const { sessionId, url } = await response.json();
-
-  // For this frontend-only demo, we simulate a successful response
-  await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-  return {
-    sessionId: 'mock_session_id_123',
-    url: `https://mock-stripe-checkout.com/session_id_123?product=${encodeURIComponent(productName)}&price=${price}`,
-  };
-}
-
+// Removed mock createStripeCheckoutSession as we are now using a direct payment link
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -64,6 +40,7 @@ function App() {
   const [hasSelectedApiKey, setHasSelectedApiKey] = useState<boolean>(false); // New state for API key selection
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false); // New state for premium access
   const [purchaseLoading, setPurchaseLoading] = useState<boolean>(false);
+  const [proceedWithApiKey, setProceedWithApiKey] = useState<boolean>(false); // New state to control API key access
 
   const text = UI_TEXT[language];
 
@@ -74,11 +51,12 @@ function App() {
       const storedPremium = localStorage.getItem('isPremiumUser');
       if (storedPremium === 'true') {
         setIsPremiumUser(true);
-        setHasSelectedApiKey(true); // Premium users don't need to select their own key
+        // Premium users automatically bypass API key checks, so set hasSelectedApiKey to true conceptually
+        setHasSelectedApiKey(true);
         return;
       }
 
-      // If not premium, check user's own API key
+      // If not premium, check user's own API key for display on the selection screen
       if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
         const keySelected = await window.aistudio.hasSelectedApiKey();
         setHasSelectedApiKey(keySelected);
@@ -101,24 +79,33 @@ function App() {
     setSolution(null);
     setError(null);
     setLoading(false);
-  }, []);
+    // If not premium, always return to the entry screen after clearing
+    if (!isPremiumUser) {
+      setProceedWithApiKey(false);
+    }
+  }, [isPremiumUser]);
 
   const handleLanguageChange = useCallback((lang: Language) => {
     setLanguage(lang);
     setActiveTab(lang); // Keep active tab in sync with overall language
   }, []);
 
-  // Function to handle API key selection
+  // Function to handle API key selection (on the entry screen)
   const handleSelectApiKey = useCallback(async () => {
     if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
       await window.aistudio.openSelectKey();
-      // Assume success and proceed, as per guidelines for race condition
+      // Assume success and update hasSelectedApiKey. User still needs to click 'Continue'
       setHasSelectedApiKey(true);
       setError(null); // Clear any previous API key related errors
     } else {
-      // In a non-aistudio environment, this button would do nothing or show a dev message
       setError("window.aistudio is not available for API key selection. Ensure you're in an AI Studio environment or using a configured API_KEY env var.");
     }
+  }, []);
+
+  // Function to handle continuing with an existing API key
+  const handleProceedWithApiKey = useCallback(() => {
+    setProceedWithApiKey(true);
+    setError(null); // Clear any previous errors
   }, []);
 
   // Function to handle Premium purchase
@@ -126,27 +113,20 @@ function App() {
     setPurchaseLoading(true);
     setError(null);
     try {
-      // 1. Load Stripe.js
-      const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
-      if (!stripe) {
-        throw new Error("Failed to load Stripe.js");
-      }
+      // Open the Stripe Payment Link in a new tab
+      window.open(STRIPE_PAYMENT_LINK, '_blank');
 
-      // 2. Simulate creating a Checkout Session (this would be a backend call in a real app)
-      const { sessionId, url } = await createStripeCheckoutSession(PREMIUM_PRODUCT_NAME, PREMIUM_PRODUCT_PRICE);
+      // For this frontend-only demo, we'll simulate a successful payment after a delay
+      // In a real application, you'd use webhooks or check a return URL
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate time for user to complete payment
 
-      // 3. Redirect to Stripe Checkout (simulated)
-      console.log(`Redirecting to mock Stripe Checkout: ${url}`);
-      // In a real app, you would use stripe.redirectToCheckout({ sessionId });
-      // For this demo, we'll just simulate success and update state
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate redirect delay
-
-      // After simulated successful payment/redirect back
+      // After simulated successful payment/redirection
       setIsPremiumUser(true);
       setHasSelectedApiKey(true); // Premium user status covers API key need
       localStorage.setItem('isPremiumUser', 'true');
       console.log(text.purchaseSuccess);
       setError(null); // Clear any payment-related error
+      setProceedWithApiKey(true); // Also allow proceeding since they are premium
 
     } catch (e: any) {
       console.error('Purchase error:', e);
@@ -162,14 +142,16 @@ function App() {
   // Effect to solve math problem when a file is selected
   useEffect(() => {
     const fetchSolution = async () => {
-      // Only proceed if file is selected AND (premium user OR API key is selected)
-      if (!selectedFile || (!isPremiumUser && !hasSelectedApiKey)) return;
+      // Only proceed if file is selected AND (premium user OR user chose to proceed with API key)
+      if (!selectedFile || (!isPremiumUser && !proceedWithApiKey)) return;
 
       setLoading(true);
       setError(null);
       setSolution(null);
 
       try {
+        // Create a new GoogleGenAI instance right before making an API call
+        // to ensure it always uses the most up-to-date API key from the dialog.
         const response: ApiResponse = await solveMathProblem(selectedFile, GEMINI_MODEL_IMAGE);
         if (response?.solution) {
           setSolution(response.solution);
@@ -182,6 +164,7 @@ function App() {
         if (!isPremiumUser && err.message.includes('Requested entity was not found.')) {
           setError(text.apiKeyRequiredMessage); // Provide user-friendly message
           setHasSelectedApiKey(false); // Reset API key state to prompt re-selection
+          setProceedWithApiKey(false); // Force user back to selection screen
         } else if (err.message.includes('Failed to parse model response')) {
           setError(text.modelError + ' ' + err.message);
         } else {
@@ -194,10 +177,11 @@ function App() {
 
     fetchSolution();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFile, text, hasSelectedApiKey, isPremiumUser]); // Re-run if selectedFile changes or if API key/premium status changes
+  }, [selectedFile, text, isPremiumUser, proceedWithApiKey]); // Re-run if selectedFile changes or if premium/proceed status changes
 
   // Determine if the full app (FileUpload + Solution) should be rendered
-  const showFullApp = isPremiumUser || hasSelectedApiKey;
+  // Only render full app if premium OR user explicitly decided to proceed with API key
+  const showFullApp = isPremiumUser || proceedWithApiKey;
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-100 to-purple-100 p-4 sm:p-6 lg:p-8">
@@ -218,13 +202,25 @@ function App() {
             </p>
 
             <div className="flex flex-col items-center space-y-4 w-full max-w-sm">
-              <button
-                onClick={handleSelectApiKey}
-                className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full"
-                disabled={purchaseLoading}
-              >
-                {text.selectApiKeyButton}
-              </button>
+              {hasSelectedApiKey ? (
+                // If API key is already selected, show 'Continue' button
+                <button
+                  onClick={handleProceedWithApiKey}
+                  className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full"
+                  disabled={purchaseLoading}
+                >
+                  {text.continueWithApiKeyButton || 'Continue with My API Key'}
+                </button>
+              ) : (
+                // Otherwise, show 'Select API Key' button
+                <button
+                  onClick={handleSelectApiKey}
+                  className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full"
+                  disabled={purchaseLoading}
+                >
+                  {text.selectApiKeyButton}
+                </button>
+              )}
               <a
                 href={BILLING_DOCS_URL}
                 target="_blank"
